@@ -73,6 +73,9 @@ public final class Excavation extends JavaPlugin implements Listener {
         if (connectedBlocks.contains(block)) {
             return;
         }
+        if (connectedBlocks.size() >= 30){
+            return;
+        }
         connectedBlocks.add(block);
         BlockFace[] faces = new BlockFace[]{
                 BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST,
