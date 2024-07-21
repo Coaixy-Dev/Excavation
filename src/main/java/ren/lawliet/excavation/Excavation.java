@@ -84,8 +84,7 @@ public final class Excavation extends JavaPlugin implements Listener {
 
         ItemMeta itemMeta = player.getInventory().getItemInMainHand().getItemMeta();
         if (itemMeta instanceof Damageable) {
-            player.getInventory().getItemInMainHand().setAmount(0);
-            return;
+            if (((Damageable) itemMeta).getDamage() == 1) return;
         }
         connectedBlocks.add(block);
         BlockFace[] faces = new BlockFace[]{
