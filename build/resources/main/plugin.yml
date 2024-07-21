@@ -1,0 +1,4 @@
+name: Excavation
+version: '1.0-SNAPSHOT'
+main: ren.lawliet.excavation.Excavation
+api-version: '1.20'
