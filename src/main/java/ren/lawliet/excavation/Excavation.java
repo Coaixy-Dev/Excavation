@@ -23,6 +23,7 @@ import java.util.Set;
 
 public final class Excavation extends JavaPlugin implements Listener {
     private final Random random = new Random();
+
     @Override
     public void onEnable() {
         getLogger().info("Loading Excavation");
@@ -51,32 +52,38 @@ public final class Excavation extends JavaPlugin implements Listener {
             Material blockMaterial = block.getType();
             // Get All Around block is same material use bfs
             int count = 0;
-            for (Block b : getConnectedBlocks(block)) {
+            for (Block b : getConnectedBlocks(block, player)) {
                 b.breakNaturally(player.getInventory().getItemInMainHand());
                 Damageable meta = (Damageable) player.getInventory().getItemInMainHand().getItemMeta();
                 if (meta != null) meta.setDamage(meta.getDamage() + 1);
                 player.getInventory().getItemInMainHand().setItemMeta(meta);
-                count ++ ;
+                count++;
             }
-            player.sendMessage("【Excavation】已挖掘"+count+"个方块");
-            
+            player.sendMessage("【Excavation】已挖掘" + count + "个方块");
+
         }
     }
 
-    public Set<Block> getConnectedBlocks(Block startBlock) {
+    public Set<Block> getConnectedBlocks(Block startBlock, Player player) {
         Set<Block> connectedBlocks = new HashSet<>();
         if (startBlock == null) {
             return connectedBlocks;
         }
-        recursiveConnect(startBlock, connectedBlocks);
+        recursiveConnect(startBlock, connectedBlocks, player);
         return connectedBlocks;
     }
 
-    private void recursiveConnect(Block block, Set<Block> connectedBlocks) {
+    private void recursiveConnect(Block block, Set<Block> connectedBlocks, Player player) {
         if (connectedBlocks.contains(block)) {
             return;
         }
-        if (connectedBlocks.size() >= 30){
+        if (connectedBlocks.size() >= 30) {
+            return;
+        }
+
+        ItemMeta itemMeta = player.getInventory().getItemInMainHand().getItemMeta();
+        if (itemMeta instanceof Damageable) {
+            player.getInventory().getItemInMainHand().setAmount(0);
             return;
         }
         connectedBlocks.add(block);
@@ -87,16 +94,17 @@ public final class Excavation extends JavaPlugin implements Listener {
         for (BlockFace face : faces) {
             Block relativeBlock = block.getRelative(face);
             if (relativeBlock.getType() == block.getType()) {
-                recursiveConnect(relativeBlock, connectedBlocks);
+                recursiveConnect(relativeBlock, connectedBlocks, player);
             }
         }
     }
+
     // this code is from PuddingKc
     private void dropExperience(Block block, Player player) {
         int expToDrop = 0;
         String var4 = block.getType().toString().toUpperCase();
         byte var5 = -1;
-        switch(var4.hashCode()) {
+        switch (var4.hashCode()) {
             case -2143360393:
                 if (var4.equals("REDSTONE_ORE")) {
                     var5 = 9;
@@ -163,7 +171,7 @@ public final class Excavation extends JavaPlugin implements Listener {
                 }
         }
 
-        switch(var5) {
+        switch (var5) {
             case 0:
             case 1:
                 expToDrop = this.random.nextInt(3);
@@ -191,7 +199,7 @@ public final class Excavation extends JavaPlugin implements Listener {
         }
 
         if (expToDrop > 0) {
-            ((ExperienceOrb)block.getWorld().spawn(player.getLocation(), ExperienceOrb.class)).setExperience(expToDrop);
+            ((ExperienceOrb) block.getWorld().spawn(player.getLocation(), ExperienceOrb.class)).setExperience(expToDrop);
         }
 
     }
