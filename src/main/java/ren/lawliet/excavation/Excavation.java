@@ -57,6 +57,7 @@ public final class Excavation extends JavaPlugin implements Listener {
                 Damageable meta = (Damageable) player.getInventory().getItemInMainHand().getItemMeta();
                 if (meta != null) meta.setDamage(meta.getDamage() + 1);
                 player.getInventory().getItemInMainHand().setItemMeta(meta);
+                dropExperience(block, player);
                 count++;
             }
             player.sendMessage("【Excavation】已挖掘" + count + "个方块");
