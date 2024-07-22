@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -99,16 +100,26 @@ public final class Excavation extends JavaPlugin implements Listener {
     }
 
     private void recursiveConnect(Block block, Set<Block> connectedBlocks, Player player) {
+
+        ItemStack itemStack = player.getInventory().getItemInMainHand();
+        ItemMeta itemMeta = itemStack.getItemMeta();
+
         if (connectedBlocks.contains(block)) {
             return;
         }
-        if (connectedBlocks.size() >= 30) {
+        if (itemStack.getType().getMaxDurability() <= connectedBlocks.size()){
+            itemStack.setAmount(0);
             return;
         }
-
-        ItemMeta itemMeta = player.getInventory().getItemInMainHand().getItemMeta();
         if (itemMeta instanceof Damageable) {
-            if (((Damageable) itemMeta).getDamage() == 1) return;
+            if (((Damageable) itemMeta).getDamage() >= itemStack.getType().getMaxDurability()) {
+                player.getInventory().getItemInMainHand().setAmount(0);
+                return;
+            }
+        }
+
+        if (connectedBlocks.size() >= configuration.getInt("max-excavation")) {
+            return;
         }
         connectedBlocks.add(block);
         BlockFace[] faces = new BlockFace[]{
