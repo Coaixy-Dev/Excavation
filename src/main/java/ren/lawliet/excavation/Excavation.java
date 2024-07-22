@@ -27,7 +27,18 @@ public final class Excavation extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         getLogger().info("Loading Excavation");
+        getLogger().info("Author 's Email : Coaixy@qq.com");
         Bukkit.getPluginManager().registerEvents(this, this);
+
+        configuration = YamlConfiguration.loadConfiguration(getConfigFile());
+    }
+
+    private File getConfigFile() {
+        File configFile = new File(getDataFolder(), "config.yml");
+        if (!configFile.exists()) {
+            saveDefaultConfig();
+        }
+        return configFile;
     }
 
     // Contains PicAxe and Axe and sneaking
