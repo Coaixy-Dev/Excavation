@@ -3,8 +3,10 @@ package ren.lawliet.excavation;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Pose;
@@ -17,12 +19,14 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
 public final class Excavation extends JavaPlugin implements Listener {
     private final Random random = new Random();
+    private YamlConfiguration configuration;
 
     @Override
     public void onEnable() {
@@ -45,7 +49,7 @@ public final class Excavation extends JavaPlugin implements Listener {
     public boolean getMiningMode(Player player) {
         return player.getGameMode() == GameMode.SURVIVAL &&
                 player.getInventory().getItemInMainHand().getType().toString().toUpperCase().contains("AXE")
-                && player.getPose() == Pose.SNEAKING;
+                && player.getPose() == Pose.SNEAKING && configuration.getBoolean("enabled");
     }
 
     @EventHandler
@@ -54,7 +58,6 @@ public final class Excavation extends JavaPlugin implements Listener {
         // If player is in survival mode and holding an axe or pickaxe
         Block block = event.getBlock();
         if (getMiningMode(player)) {
-            player.sendMessage("【Excavation】连锁挖矿");
             // Get the block that was broken
             int x = block.getX();
             int y = block.getY();
@@ -71,7 +74,17 @@ public final class Excavation extends JavaPlugin implements Listener {
                 dropExperience(block, player);
                 count++;
             }
-            player.sendMessage("【Excavation】已挖掘" + count + "个方块");
+            // play something from config
+            String message = configuration.getString("message-content");
+            boolean messageEnabled = configuration.getBoolean("message");
+            if (messageEnabled && message != null) {
+                message = message.replace("%count%", String.valueOf(count));
+                player.sendMessage(message);
+                boolean soundEnabled = configuration.getBoolean("sound");
+                if (soundEnabled) {
+                    player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 1);
+                }
+            }
 
         }
     }
