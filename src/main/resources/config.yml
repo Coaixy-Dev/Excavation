@@ -1,0 +1,10 @@
+# 总开关
+enabled: true
+# 最大一次挖掘数量
+max-excavation: 30
+# 是否开启消息提示
+message: true
+# 消息提示内容
+message-content: '&a你挖掘了 &e%count% &a个方块'
+# 是否开启音效
+sound: true
