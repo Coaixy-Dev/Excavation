@@ -28,7 +28,6 @@ import java.util.Set;
 public final class Excavation extends JavaPlugin implements Listener {
     private final Random random = new Random();
     private YamlConfiguration configuration;
-
     @Override
     public void onEnable() {
         getLogger().info("Loading Excavation");
